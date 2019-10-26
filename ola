@@ -1,0 +1,100 @@
+#include <queue>
+#include <iostream>
+using namespace std;
+
+class coordenada {
+public:
+    int fil;
+    int col;
+    int dist;
+    coordenada(int x, int y, int w)
+            : fil(x), col(y), dist(w)
+    {
+    }
+};
+// Driver code
+void minDistance(int N,int M,char**camino);
+int main()
+{
+    int n,m;
+    cin>>n>>m;
+    char **camino=new char*[n];
+    for (int x=0;x<n;++x){
+        camino[x]=new char[m];
+    }
+    for (int x=0;x<n;++x){
+        for(int y=0;y<m;y++){
+            cin>>camino[x][y];
+        }
+    }
+
+    minDistance(n,m,camino);
+    return 0;
+}
+void minDistance(int N,int M,char**camino)
+
+{
+
+    coordenada inicio(0, 0, 0);
+
+        // para encontrar el inicio buscaremos por toda la matriz
+        // creearemos una matriz booleana para observar los obstaculos
+    bool visited[N][M];
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < M; j++){
+            if (camino[i][j] == '0'){
+                visited[i][j] = true;}
+
+    // Encontrar el numero de inicio
+            if (camino[i][j] == 'i')
+            {
+                inicio.fil = i;
+                inicio.col = j;
+            }
+        }
+    }
+
+    // applying BFS on matrix cells starting from source
+    // queue es cola, es como un vector que se puede usar facilmente, es como un vector
+    // se crea un cola de coordenadas, es como una cola, para seguir el orden de llegada
+    queue<coordenada> q;
+    q.push(inicio); // push es como un pushback en vectores
+    visited[inicio.fil][inicio.col] = true;
+    while (!q.empty()) {
+        coordenada p = q.front();
+        q.pop();
+
+    // Destination found;
+        if (camino[p.fil][p.col] == 'f'){
+            cout<<"<"<<p.fil<<","<<p.col<<"> "<<endl;
+            cout<<p.dist;}
+
+    // moving up
+        if (p.fil - 1 >= 0 && visited[p.fil - 1][p.col] == false) {
+            q.push(coordenada(p.fil - 1, p.col, p.dist + 1));
+            visited[p.fil - 1][p.col] = true;
+            cout<<"<"<<p.fil<<","<<p.col<<"> ";
+        }
+
+        // moving down
+        if (p.fil + 1 < N && visited[p.fil + 1][p.col] == false) {
+            q.push(coordenada(p.fil + 1, p.col, p.dist + 1));
+            visited[p.fil + 1][p.col] = true;
+            cout<<"<"<<p.fil<<","<<p.col<<"> ";
+        }
+
+        // moving left
+        if (p.col - 1 >= 0 && visited[p.fil][p.col - 1] == false) {
+            q.push(coordenada(p.fil, p.col - 1, p.dist + 1));
+            visited[p.fil][p.col - 1] = true;
+            cout<<"<"<<p.fil<<","<<p.col<<"> ";
+        }
+
+        // moving right
+        if (p.col + 1 < M && visited[p.fil][p.col + 1] == false) {
+            q.push(coordenada(p.fil, p.col + 1, p.dist + 1));
+            visited[p.fil][p.col + 1] = true;
+            cout<<"<"<<p.fil<<","<<p.col<<"> ";
+        }
+    }
+}
