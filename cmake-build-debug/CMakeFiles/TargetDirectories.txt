@@ -1,0 +1,3 @@
+C:/Users/J/Documents/GitHub/battlebots/CodigoBasePOO/cmake-build-debug/CMakeFiles/CodigoBasePOO.dir
+C:/Users/J/Documents/GitHub/battlebots/CodigoBasePOO/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/J/Documents/GitHub/battlebots/CodigoBasePOO/cmake-build-debug/CMakeFiles/rebuild_cache.dir

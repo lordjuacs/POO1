@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Users/J/Documents/GitHub/battlebots/CodigoBasePOO/funciones.h
+tipos.h
+C:/Users/J/Documents/GitHub/battlebots/CodigoBasePOO/tipos.h
+
+C:/Users/J/Documents/GitHub/battlebots/CodigoBasePOO/main.cpp
+funciones.h
+C:/Users/J/Documents/GitHub/battlebots/CodigoBasePOO/funciones.h
+
+C:/Users/J/Documents/GitHub/battlebots/CodigoBasePOO/tipos.h
+iostream
+-
+fstream
+-
+string
+-
+
