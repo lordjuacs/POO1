@@ -113,3 +113,15 @@ void minDistance(int N,int M,char**camino,coordenada inicio, coordenada final)
         }
     }
 }
+
+10 10
+* o * * * * o * * *
+* * * * * * * * * o
+o o * * o * * * o *
+o * o * * * * * o *
+o o o * * * * * * *
+* * * * * * * * o *
+* * * * * * * * o *
+* * * * * o * * o *
+* * * * o * * o * *
+* * * * * o * * * *
