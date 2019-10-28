@@ -17,7 +17,7 @@ public:
     }
 };
 // Driver code
-void minDistance(int N,int M,char**camino,coordenada,coordenada);
+void minDistance(int ,int ,char**,coordenada,coordenada);
 int main()
 {
     int n,m;
