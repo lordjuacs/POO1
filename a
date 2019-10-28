@@ -1,0 +1,115 @@
+// C++ Code implementation for above problem /*
+
+#include <queue>
+#include <iostream>
+#include <string>
+#include <stdio.h>
+using namespace std;
+
+class coordenada {
+public:
+    int fil;
+    int col;
+    int dist;
+    coordenada(int x, int y, int w)
+            : fil(x), col(y), dist(w)
+    {
+    }
+};
+// Driver code
+void minDistance(int N,int M,char**camino,coordenada,coordenada);
+int main()
+{
+    int n,m;
+    cin>>n>>m;
+    char **camino=new char*[n];
+    for (int x=0;x<n;++x){
+        camino[x]=new char[m];
+    }
+    for (int x=0;x<n;++x){
+        for(int y=0;y<m;y++){
+            cin>>camino[x][y];
+        }
+    }
+    int a,b,c,d;
+    cout<<endl;
+    cout<<"Donde iniciara? ";cin>>a>>b;
+    cout<<"Donde terminara? ";cin>>c>>d;
+    coordenada inicial(a, b, 0);
+    coordenada final(c, d, 0);
+
+    minDistance(n,m,camino,inicial,final);
+
+    return 0;
+}
+void minDistance(int N,int M,char**camino,coordenada inicio, coordenada final)
+
+{
+
+
+    camino[inicio.fil][inicio.col]='i';
+    camino[final.fil][final.col]='f';
+        // para encontrar el inicio buscaremos por toda la matriz
+        // creearemos una matriz booleana para observar los obstaculos
+        //la matriz iniciada esta llena de 0, o false
+    bool matrizbul[N][M];
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < M; j++){
+            if (camino[i][j] == 'o'){
+                matrizbul[i][j] = true;}
+        }
+    }
+
+    // applying BFS on matrix cells starting from source
+    // queue es cola, es como un vector que se puede usar facilmente, es como un vector
+    // se crea un cola de coordenadas, es como una cola, para seguir el orden de llegada
+    queue<coordenada> q;
+    q.push(inicio); // push es como un pushback en vectores
+    matrizbul[inicio.fil][inicio.col] = true;
+    vector<coordenada> a;
+    while (!q.empty()) {
+        coordenada p = q.front();
+
+
+        q.pop();
+    // Destination found;
+        if (camino[p.fil][p.col]=='f'){
+            cout<<endl;
+            for (int x=0; x<a.size();x++){
+                cout<<"<"<<a[x].fil<<","<<a[x].col<<"> ";
+            }cout<<endl;
+            cout<<p.dist;}
+
+    // moving up
+        if (p.fil - 1 >= 0 && matrizbul[p.fil - 1][p.col] == false) {
+            q.push(coordenada(p.fil - 1, p.col, p.dist + 1));
+            matrizbul[p.fil - 1][p.col] = true;
+            a.push_back(p);
+
+        }
+
+        // moving down
+        if (p.fil + 1 < N && matrizbul[p.fil + 1][p.col] == false) {
+            q.push(coordenada(p.fil + 1, p.col, p.dist + 1));
+            matrizbul[p.fil + 1][p.col] = true;
+            a.push_back(p);
+
+        }
+
+        // moving left
+        if (p.col - 1 >= 0 && matrizbul[p.fil][p.col - 1] == false) {
+            q.push(coordenada(p.fil, p.col - 1, p.dist + 1));
+            matrizbul[p.fil][p.col - 1] = true;
+            a.push_back(p);
+
+        }
+
+        // moving right
+        if (p.col + 1 < M && matrizbul[p.fil][p.col + 1] == false) {
+            q.push(coordenada(p.fil, p.col + 1, p.dist + 1));
+            matrizbul[p.fil][p.col + 1] = true;
+            a.push_back(p);
+
+        }
+    }
+}
