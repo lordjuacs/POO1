@@ -7,6 +7,10 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <cstring>
+#include <vector>
+#include <stack>
+
 using namespace std;
 typedef int tipo_n;
 
