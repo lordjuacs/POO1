@@ -148,18 +148,13 @@ Point pedirCoordenada(string palabra, int filas, int columnas){
     Point coordenada;
     int xi, yi;
     do{
-        cout << "Ingrese la posicion x del" << palabra;
-        cin >> xi;
-    } while((xi < 0 or xi >= filas));
-    do{
-        cout << "Ingrese la posicion y del" << palabra;
-        cin >> yi;
-    } while((yi < 0 or yi >= columnas));
+        cout << "Ingrese la posicion (x,y) del " << palabra<<": ";
+        cin >> xi>>yi;
+    } while((xi < 0 and xi >= filas) and (yi < 0 and yi >= columnas));
     coordenada.x = xi;
     coordenada.y = yi;
     return coordenada;
 }
-
 class node {
 public:
     int x, y;
