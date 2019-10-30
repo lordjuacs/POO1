@@ -7,6 +7,22 @@ int main()
     int ** matriz = nullptr;
     tipo_n filas = 0, columnas = 0, tobs = 0;
     txtAMatriz(matriz, fichero, filas, columnas, tobs);
+    for (int x=0; x<filas;x++){
+        if(x==0){
+            cout<<"   0   1   2   3   4   5   6   7   8   9"<<endl;
+        }cout<<x<<" ";
+        for(int y=0;y<columnas;y++){
+
+            if(matriz[x][y]==0){
+                cout<<"[*] ";
+            }
+            else{
+                cout<<"[ ] ";
+
+            }
+
+        }cout<<endl;
+    }
     Point origen = pedirCoordenada("origen", filas, columnas);
     Point destino = pedirCoordenada("destino", filas, columnas);
     vector<Tupla> Previo;
