@@ -4,335 +4,256 @@
 #include "tipos.h"
 #ifndef CODIGOBASEPOO_FUNCIONES_H
 #define CODIGOBASEPOO_FUNCIONES_H
+
+class Point{
+public:
+    int x, y;
+    Point(){
+        x = 0;
+        y = 0;
+    };
+    Point(int _x, int _y){
+        x = _x;
+        y = _y;
+    }
+};
+void llenarMatriz(int **&matriz, int filas, int columnas, vector <Point>&obstaculos,  vector <Point>&coordenadas){
+    matriz = new int*[filas];
+    for(int i = 0; i < filas; i++){
+        matriz[i] = new int[columnas];
+    }
+
+    for(int i = 0; i < filas; i++){
+        for(int j = 0; j < columnas; j++){
+            matriz[i][j] = 1;
+        }
+    }
+
+    for(auto elemento:obstaculos)
+        matriz[elemento.x][elemento.y] = 0;
+    for(auto cosa:coordenadas)
+        matriz[cosa.x][cosa.y] = 2;
+}
+
+void matrizChar(char ** &arena, int **&matriz, int filas, int columnas){
+    arena = new char*[filas];
+    for(int i = 0; i < filas; i++){
+        arena[i] = new char[columnas];
+    }
+
+    for(int i = 0; i < filas; i++){
+        for(int j = 0; j < columnas; j++){
+            if(matriz[i][j] == 1)
+                arena[i][j] = ' ';
+            else if(matriz[i][j] == 2)
+                arena[i][j] = char(178);
+            else
+                arena[i][j] = char(254);
+        }
+    }
+}
+
 //funcion para leer el archivo, crear la matriz con los obstaculos
-void txtAMatriz(tipo_n ** &matriz, const string& fichero, tipo_n &filas, tipo_n &columnas, tipo_n &tobs){
+void txtAMatrizVector(const string& fichero, tipo_n &fil, tipo_n &col, tipo_n &tobs, vector <Point>&obstaculos)
+{
     ifstream fi;
     fi.open(fichero);
-    if(fi.is_open())
-    {
-        fi >> filas >> columnas;
-        matriz = new int*[filas];
-        for(tipo_n i = 0; i < filas; i++)
-        {
-            matriz[i] = new int[columnas];
-        }
-
-        for(tipo_n i = 0; i < filas; i++)
-        {
-            for(tipo_n j = 0; j < columnas; j++)
-            {
-                matriz[i][j] = 1;
-            }
-        }
-
+    if(fi.is_open()) {
+        fi >> fil >> col;
         fi >> tobs;
         for(tipo_n i = 0; i < tobs; i++)
         {
             tipo_n xo, xy;
             fi >> xo >> xy;
-            matriz[xo][xy] = 0;
+            Point obs(xo, xy);
+            obstaculos.push_back(obs);
         }
         fi.close();
+
     }
     else {
         cerr << "Error de lectura" << endl;
     }
 }
-//las siguientes funciones, clases y datos son las encargadas de encontrar el camino mas corto
-//Sirve para almacenar una coordenada
-class Point
-{
-public:
-    int x;
-    int y;
-};
 
-class vectorNodo
-{
-public:
-    Point pt;  // Las coordenadas de una celda
-    int dist;  // la distancia a la celda desde el origen
-};
-//este tipo de dato servira para poder almacenar las coordenadas candidatas en el vector
-class Tupla
-{
-public:
-    int x, y, dist;
-};
 
-// Revisa si una celda es valida valida o no
-bool esValida(int row, int col, int filas, int columnas)
-{
-    // return true if row number and column number
-    // is in range
-    return (row >= 0) && (row < filas) && (col >= 0) && (col < columnas);
-}
 
-// Estos arrays se usan para tener el numero de filas y columnas de los 4 vecinos de cada celda
-int rowNum[] = {-1, 0, 0, 1};
-int colNum[] = {0, -1, 1, 0};
-
-// Es la funcion que encuentra el camino mas corto dentro de un laberinto con obstaculos
-// Devuelve la distancia mas corta
-int BFS(int ** matriz, int filas, int columnas, Point origen, Point destino, vector<Tupla> &CaminoPre)
-//CaminoPre va a almacenar todas las celdas visitadas posibles, para despues pasarlo por una funcion que de las validas
-{
-    // Revisa si el origen y el final tienen valor de 1 (sino no tiene sentido intentar encontrar la distancia)
-    if (!matriz[origen.x][origen.y] || !matriz[destino.x][destino.y])
-        return -1;
-
-    bool visitado[filas][columnas];
-    memset(visitado, false, sizeof visitado);
-
-    // Marca la celda como visitada
-    visitado[origen.x][origen.y] = true;
-
-    // Crea un vector para intentar el algoritmo:
-    vector<vectorNodo> q;
-
-    // La distancia del origen al origen es 0
-    vectorNodo s = {origen, 0};
-    q.push_back(s);  // Se añade el nodo origen al vector
-
-    //Se añade el nodo origen al vector CaminPre
-    Tupla ori{};
-    ori.x = origen.x;
-    ori.y = origen.y;
-    ori.dist = 0;
-    CaminoPre.push_back(ori);
-
-    // Se hace BFS empezando del origen
-    while (!q.empty()) {
-        vectorNodo curr = q.front();
-        Point pt = curr.pt;
-
-        // Si ya llegamos al destino, acaba todo
-        if (pt.x == destino.x && pt.y == destino.y) {
-            //se añade el destino al CaminoPre
-            Tupla nodo;
-            nodo.x = curr.pt.x;
-            nodo.y = curr.pt.y;
-            nodo.dist = curr.dist;
-            CaminoPre.push_back(nodo);
-            //Se devuelve la longitud del camino
-            return curr.dist;
-        }
-        // Si no es el caso, eliminar el primer objeto y añadir los vecinos
-        q.erase(q.begin());
-        for (int i = 0; i < 4; i++) {
-            int row = pt.x + rowNum[i];
-            int col = pt.y + colNum[i];
-
-            // Si la celda vecina es valida, tiene camino y aun no ha sido visitada, entonces añadirla al vector
-            if (esValida(row, col, filas, columnas) && matriz[row][col] && !visitado[row][col]) {
-                // marcar la celda como visitada y añadirla
-                visitado[row][col] = true;
-                vectorNodo Adjcell = {{row, col}, curr.dist + 1};
-                //añadir la posible celda al CaminoPre
-                Tupla coor;
-                coor.x = row;
-                coor.y = col;
-                coor.dist = curr.dist + 1;
-                CaminoPre.push_back(coor);
-                q.push_back(Adjcell);
-            }
-        }
-
-    }
-    // Si el destino no se encontro, retornar -1
-    return -1;
-}
 
 //funcion para pedir origen y destino
-Point pedirCoordenada(string palabra, int filas, int columnas){
-    Point coordenada;
+Point pedirCoordenada(const string& palabra, int filas, int columnas){
+    Point coordenada{};
     int xi, yi;
     do{
-        cout << "Ingrese la posicion (x,y) del " << palabra<<": ";
-        cin >> xi>>yi;
-    } while((xi < 0 and xi >= filas) and (yi < 0 and yi >= columnas));
+        cout << "Ingrese la coordenada x " << palabra << ":";
+        cin >> xi;
+    } while((xi < 0 or xi >= filas));
+    do{
+        cout << "Ingrese la coordenada y " << palabra << ":";
+        cin >> yi;
+    } while((yi < 0 or yi >= columnas));
     coordenada.x = xi;
     coordenada.y = yi;
     return coordenada;
 }
-class node {
-public:
+
+// queue node used in BFS
+struct NODO
+{
+    // (x, y) represents coordinates of a cell in matrix
     int x, y;
-    int dir;
-
-    node(int i, int j)
+    // parent stores the parent Node of the current cell
+    // It will have only one entry i.e. parent node
+    vector<NODO> parent;
+    // As we are using struct as a key in a std::set,
+    // we need to overload below operators
+    bool operator==(const NODO& ob) const
     {
-        x = i;
-        y = j;
-
-        // Initially direction
-        // set to 0
-        dir = 0;
+        return x == ob.x && y == ob.y;
+    }
+    bool operator<(const NODO& ob) const
+    {
+        return x < ob.x || (x == ob.x && y < ob.y);
     }
 };
 
-bool isReachable(int ** matriz, int filas, int columnas, Point origen, Point destino, stack<node> &s)
+// Below arrays details all 4 possible movements from a cell
+const int rowNum[] = {-1, 0, 0, 1 };
+const int colNum[] = {0, -1, 1, 0 };
+
+// The function returns false if pt is not a valid position
+bool esValido(int x, int y, const vector<Point>&obstaculos, int filas, int columnas)
 {
-    bool visitado2[filas][columnas];
-    memset(visitado2, true, sizeof(visitado2));
-    // Initially starting at origin.
-    int i = origen.x, j = origen.y;
-    node temp(i, j);
-
-    s.push(temp);
-
-    int fx = destino.x;
-    int fy = destino.y;
-
-    while (!s.empty()) {
-        // Pop the top node and move to the
-        // left, right, top, down or retract
-        // back according the value of node's
-        // dir variable.
-        temp = s.top();
-        int d = temp.dir;
-        i = temp.x, j = temp.y;
-
-        // Increment the direction and
-        // push the node in the stack again.
-        temp.dir++;
-        s.pop();
-        s.push(temp);
-
-        // If we reach the Food coordinates
-        // return true
-        if (i == fx and j == fy) {
-            return true;
+    int matrix[filas][columnas];
+    for(int i = 0; i < filas; i++){
+        for(int j = 0; j < columnas; j++){
+            matrix[i][j] = 1;
         }
+    }
+    for(auto elemento : obstaculos)
+        matrix[elemento.x][elemento.y] = 0;
+    return matrix[x][y] and (x >= 0 and x < filas) and (y >= 0 and y < columnas);
+}
 
-        // Checking the Up direction.
-        if (d == 0) {
-            if (i - 1 >= 0 and matriz[i - 1][j] and
-                visitado2[i - 1][j]) {
-                node temp1(i - 1, j);
-                visitado2[i - 1][j] = false;
-                s.push(temp1);
+// Function to print the complete path from source to destination
+int imprimirCamino(vector<NODO> path, vector<Point>&coordenadas)
+{
+    if (path.empty())
+        return 0;
+
+    int len = imprimirCamino(path[0].parent, coordenadas) + 1;
+    cout << "(" << path[0].x << ", " << path[0].y << ") ";
+    Point coor(path[0].x, path[0].y);
+    coordenadas.push_back(coor);
+    return len;
+}
+
+// Find shortest route in the matrix from source cell (x, y) to
+// destination cell (filas - 1, filas - 1)
+int encontrarCamino(const int filas, const int columnas, const int ox, const int oy, const int fx, const int fy, const vector<Point>&obstaculos, vector<Point>&coordenadas)
+{
+    int matrix[filas][columnas];
+    for(int i = 0; i < filas; i++){
+        for(int j = 0; j < columnas; j++){
+            matrix[i][j] = 1;
+        }
+    }
+    for(auto elemento : obstaculos)
+        matrix[elemento.x][elemento.y] = 0;
+    // create a queue and enqueue first node
+    queue<NODO> q;
+    NODO src = {ox, oy};
+    q.push(src);
+    // set to check if matrix cell is visited before or not
+    set<NODO> visited;
+    visited.insert(src);
+    // run till queue is not empty
+    while (!q.empty())
+    {
+
+        // pop front node from the queue and process it
+        NODO curr = q.front();
+        q.pop();
+        int i = curr.x;
+        int j = curr.y;
+        // if destination is found, print the shortest path and
+        // return the shortest path length
+        if ((matrix[i][j]) && (i == fx) && (j == fy) )
+        {
+            cout << "CON HEURISTICA:" << endl;
+            cout << "--------------------------" << endl;
+            int len = imprimirCamino({curr}, coordenadas);
+
+            return len;
+        }
+        //get value of current cell
+        // check all 4 possible movements from current cell
+        // and recur for each valid movement
+        for (int k = 0; k < 4; k++)
+        {
+            // get next position coordinates using value of current cell
+            int x = i + rowNum[k];
+            int y = j + colNum[k];
+
+            // check if it is possible to go to next position
+            // from current position
+            if (esValido(x, y, obstaculos, filas, columnas))
+            {
+                // construct the next cell node
+                NODO next = {x, y, {curr} };
+
+                // if it not visited yet
+                if (!visited.count(next) && matrix[next.x][next.y])
+                {
+                    // push it into the queue and mark it as visited
+                    q.push(next);
+                    visited.insert(next);
+                }
             }
-        }
-
-            // Checking the left direction
-        else if (d == 1) {
-            if (j - 1 >= 0 and matriz[i][j - 1] and
-                visitado2[i][j - 1]) {
-                node temp1(i, j - 1);
-                visitado2[i][j - 1] = false;
-                s.push(temp1);
-            }
-        }
-
-            // Checking the down direction
-        else if (d == 2) {
-            if (i + 1 < filas and matriz[i + 1][j] and
-                visitado2[i + 1][j]) {
-                node temp1(i + 1, j);
-                visitado2[i + 1][j] = false;
-                s.push(temp1);
-            }
-        }
-            // Checking the right direction
-        else if (d == 3) {
-            if (j + 1 < columnas and matriz[i][j + 1] and
-                visitado2[i][j + 1]) {
-                node temp1(i, j + 1);
-                visitado2[i][j + 1] = false;
-                s.push(temp1);
-            }
-        }
-
-            // If none of the direction can take
-            // the rat to the Food, retract back
-            // to the path where the rat came from.
-        else {
-            visitado2[temp.x][temp.y] = true;
-            s.pop();
         }
     }
 
-    // If the stack is empty and
-    // no path is found return false.
-    return false;
+    // return -1 if path is not possible
+    return -1;
 }
 
-void printStack(stack<node>s, vector<Point>&Final){
-    if (s.empty())
-        return;
-    node cima = s.top();
-    int xi = cima.x;
-    int yi = cima.y;
-    s.pop();
-    printStack(s, Final);
-    Point coordenada;
-    coordenada.x = xi;
-    coordenada.y = yi;
-    Final.push_back(coordenada);
-    cout << "<" << xi << "," << yi << ">" << " ";
-    s.push(cima);
-}
+//encontrar camino
 
-
-
-//funcion para imprimir distancia, coordenadas y el vector final con el camino
-vector <Point>CaminoFinal(int ** matriz, int filas, int columnas, Point origen, Point destino, int dist, stack<node> &s) {
-    vector <Point> Final;
-    if (dist != -1) {
-        cout << "El camino mas corto es: " << ++dist << endl;
-        if(isReachable(matriz, filas, columnas, origen, destino, s)){
-            printStack(s, Final);
-            cout << endl;
-            cout << "Nuestro algoritmo de conteo de minima distancia es 100% eficiente." << endl;
-            cout << "Nuestro algoritmo de impresion de camino mas optimo aun esta en proceso." << endl;
-            cout << "Esperemos que valore el esfuerzo profesor." << endl;
-        }
-
-
-
-        /*for (int i = 0; i < previo.size() - 1; i++) {
-            if (previo[i].dist + 1 == previo[i + 1].dist)
-                Final.push_back(previo[i]);
-            else{
-
-            }
-        }
-        Final.push_back(previo.back());
-        for (int i = 0; i < Final.size(); i++) {
-            cout << i + 1 << " x: " << Final[i].x << " y: " << Final[i].y << endl;
-        }
+void CaminoFinal(const int filas, const int columnas, const int ox, const int oy, const int fx, int fy, const vector<Point>&obstaculos, vector<Point>&coordenadas){
+    int len = encontrarCamino(filas, columnas, ox, oy, fx, fy, obstaculos, coordenadas);
+    if (len != -1) {
         cout << endl;
-        return Final;
-         */
+        cout << "Casillas del camino: " << len << endl;
     }
     else {
-        cout << "No existe ningun camino" << endl;
-        return Final;
+        cout << endl;
+        cout << "No existe ningun camino. F.";
     }
+
 }
-
-
-void actualizarMatriz(int **&matriz, int filas, int columnas, vector<Point>Final){
-    int i = 0;
-    while(i < Final.size()){
-        int posicion_x = Final[i].x;
-        int posicion_y = Final[i].y;
-        matriz[posicion_x][posicion_y] = 2;
+template<typename T>void imprimirMatriz(T &matrix, int filas, int columnas){
+    cout << endl;
+    cout << "    ";
+    for(int j = 0; j < columnas; j++)
+        cout << " " << j << " ";
+    cout << endl;
+    for(int i = 0; i < filas; i++){
+        cout << "  " << i << " ";
+        for(int j = 0; j < columnas; j++){
+            cout << '[' << matrix[i][j] << ']';
+       }
+        cout << endl;
     }
 }
 
 
 
 //liberar espacio de memoria
-void liberarMatriz(int ** &matriz, int filas, int columnas){
+ template<typename T>void liberarMatriz(T  &matrix, int filas){
     for(int i = 0; i < filas; i++)
-        delete [] matriz[i];
-    delete [] matriz;
-    matriz = nullptr;
+        delete [] matrix[i];
+    delete [] matrix;
+    matrix = nullptr;
 }
-
-
 
 
 
