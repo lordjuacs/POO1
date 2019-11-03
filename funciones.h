@@ -46,7 +46,7 @@ void matrizChar(char ** &arena, int **&matriz, int filas, int columnas){
             if(matriz[i][j] == 1)
                 arena[i][j] = ' ';
             else if(matriz[i][j] == 2)
-                arena[i][j] = char(178);
+                arena[i][j] = '*';
             else
                 arena[i][j] = char(254);
         }
@@ -84,13 +84,10 @@ Point pedirCoordenada(const string& palabra, int filas, int columnas){
     Point coordenada{};
     int xi, yi;
     do{
-        cout << "Ingrese la coordenada x " << palabra << ":";
-        cin >> xi;
-    } while((xi < 0 or xi >= filas));
-    do{
-        cout << "Ingrese la coordenada y " << palabra << ":";
-        cin >> yi;
-    } while((yi < 0 or yi >= columnas));
+        cout << "Ingrese las coordenadas de " << palabra << ":";
+        cin >> xi >> yi;
+    } while(xi < 0 or xi >= filas or yi < 0 or yi >= columnas);
+
     coordenada.x = xi;
     coordenada.y = yi;
     return coordenada;
@@ -240,7 +237,7 @@ template<typename T>void imprimirMatriz(T &matrix, int filas, int columnas){
         cout << "  " << i << " ";
         for(int j = 0; j < columnas; j++){
             cout << '[' << matrix[i][j] << ']';
-       }
+        }
         cout << endl;
     }
 }
@@ -248,7 +245,7 @@ template<typename T>void imprimirMatriz(T &matrix, int filas, int columnas){
 
 
 //liberar espacio de memoria
- template<typename T>void liberarMatriz(T  &matrix, int filas){
+template<typename T>void liberarMatriz(T  &matrix, int filas){
     for(int i = 0; i < filas; i++)
         delete [] matrix[i];
     delete [] matrix;
@@ -260,5 +257,6 @@ template<typename T>void imprimirMatriz(T &matrix, int filas, int columnas){
 
 
 #endif //CODIGOBASEPOO_FUNCIONES_H
+
 
 
