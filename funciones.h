@@ -5,6 +5,25 @@
 #ifndef CODIGOBASEPOO_FUNCIONES_H
 #define CODIGOBASEPOO_FUNCIONES_H
 
+char menu(){
+    char opcion;
+    cout<<"--------------------------\n";
+    cout<<"1- Seleccionar archivo\n";
+    cout<<"2- Seleccionar coordenadas\n";
+    cout<<"3- Salir\n";
+    cout<<"Elija opcion (1-3):";
+    cin>>opcion;
+    cout<<endl;
+    return opcion;
+}
+
+string pedirArchivo() {
+    string file;
+    cout << "Ingrese nombre del archivo: "; cin >> file;
+    string fichero = "../laberintos/" + file;
+    return fichero;
+}
+
 class Point{
 public:
     int x, y;
