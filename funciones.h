@@ -73,7 +73,7 @@ void matrizChar(char ** &arena, int **&matriz, int filas, int columnas){
 }
 
 //funcion para leer el archivo, crear la matriz con los obstaculos
-void txtAMatrizVector(const string& fichero, tipo_n &fil, tipo_n &col, tipo_n &tobs, vector <Point>&obstaculos)
+int txtAMatrizVector(const string& fichero, tipo_n &fil, tipo_n &col, tipo_n &tobs, vector <Point>&obstaculos)
 {
     ifstream fi;
     fi.open(fichero);
@@ -88,11 +88,11 @@ void txtAMatrizVector(const string& fichero, tipo_n &fil, tipo_n &col, tipo_n &t
             obstaculos.push_back(obs);
         }
         fi.close();
-
+        return 1;
     }
     else {
         cerr << "Error de lectura" << endl;
-        exit(EXIT_FAILURE);
+        return 0;
     }
 }
 
