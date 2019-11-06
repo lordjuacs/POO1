@@ -189,6 +189,10 @@ int encontrarCamino(const int filas, const int columnas, const int ox, const int
     //se rellenan los obstaculos
     for(auto elemento : obstaculos)
         matrix[elemento.x][elemento.y] = 0;
+    //se valida que el origen y el final no sean obstaculos
+    if(!(matrix[ox][oy] && matrix[fx][fy]))
+        return -1;
+    
     // se crea un queue y se añade el nodo origen
     queue<NODO> q;
     NODO src = {ox, oy};
