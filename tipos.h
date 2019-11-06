@@ -11,6 +11,7 @@
 #include <vector>
 #include <set>
 #include <queue>
+#include <cstdlib>
 
 using namespace std;
 typedef int tipo_n;
