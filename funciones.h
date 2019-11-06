@@ -92,6 +92,7 @@ void txtAMatrizVector(const string& fichero, tipo_n &fil, tipo_n &col, tipo_n &t
     }
     else {
         cerr << "Error de lectura" << endl;
+        exit(EXIT_FAILURE);
     }
 }
 
